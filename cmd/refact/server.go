@@ -195,7 +195,7 @@ var demoHTML = `
 10.   Else If v = α, α ∈ Σ∪{ε} Then Return ({α}, {α}, {α}, {α})
 11.   End of if</code></pre>
     <p>
-    <p>See. <a href="http://amzn.to/1NJFHRf">Gonzalo Navarro, Mathieu Raffinot, Flexible Pattern Matching in Strings, pp.130-131, 2002</a></p>
+    <p>see. Gonzalo Navarro, Mathieu Raffinot, Flexible Pattern Matching in Strings, pp.130-131, 2002.</p>
   <form class="frm" action="/_demo" method="POST">
     <div id="box">
     <input class="txar" name="re" placeholder="Enter regexp and click analyze." value="{{.Regexp}}" />
