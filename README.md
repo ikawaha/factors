@@ -8,6 +8,8 @@
 $ go get github.com/ikawaha/regexp/...
 ```
 
+To draw parse trees, demo application uses graphviz . You need graphviz installed.
+
 ## Usage
 
 ```
@@ -20,7 +22,6 @@ usage: refact regexp
 
 ### Web App
 
-To draw parse trees, demo application uses graphviz . You need graphviz installed.
 
 ![demo](https://raw.githubusercontent.com/wiki/ikawaha/regexp/images/regexp_factors_demo.png)
 
