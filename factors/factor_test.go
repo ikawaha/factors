@@ -70,8 +70,8 @@ func TestConcatenate(t *testing.T) {
 			want: Factor{
 				Exact:    Set{infinite: true},
 				Prefix:   Set{infinite: true},
-				Suffix:   Set{infinite: true},
-				Fragment: Set{infinite: true},
+				Suffix:   NewSet("a"),
+				Fragment: NewSet("a"),
 			},
 		},
 		{
@@ -82,9 +82,9 @@ func TestConcatenate(t *testing.T) {
 			},
 			want: Factor{
 				Exact:    NewSet("ab"),
-				Prefix:   NewSet("a"),
-				Suffix:   NewSet("b"),
-				Fragment: NewSet("a", "b"),
+				Prefix:   NewSet("ab"),
+				Suffix:   NewSet("ab"),
+				Fragment: NewSet("ab"),
 			},
 		},
 	}
