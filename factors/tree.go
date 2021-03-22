@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"io"
 	"regexp/syntax"
-	"strings"
 )
 
 const maxPrintLen = 30
 
+// Node represents a node of a parse tree.
 type Node struct {
 	Factor   Factor
 	Regexp   *syntax.Regexp
@@ -17,22 +17,12 @@ type Node struct {
 	Internal bool
 }
 
-//for debug
+// String returns string representation of a node.
 func (n Node) String() string {
 	return fmt.Sprintf("op:%v, re:%v, factor:%v", Op(n.Regexp.Op), n.Regexp, n.Factor)
 }
 
-//for debug
-func PrintTree(n *Node, depth int) {
-	if n == nil {
-		return
-	}
-	fmt.Printf("%v%+v\n", strings.Repeat("-", depth), n)
-	for _, c := range n.Child {
-		PrintTree(c, depth+1)
-	}
-}
-
+// Edge represents a edge.
 type Edge struct {
 	from *Node
 	to   *Node
@@ -81,6 +71,7 @@ func walk(n *Node) ([]*Node, []Edge) {
 	return ns, es
 }
 
+// Dot writes a node in dot format.
 func (n *Node) Dot(w io.Writer) {
 	const (
 		dotHeader = "graph regexptree {\tdpi=48\tgraph [style=filed];\tnode [shape=record];"

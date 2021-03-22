@@ -212,66 +212,6 @@ func TestSet_Clear(t *testing.T) {
 	}
 }
 
-func TestSet_Clone(t *testing.T) {
-	type fields struct {
-		undef      bool
-		minimumLen int
-		items      stringSet
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		want   Set
-	}{
-		{
-			name: "clone a set",
-			fields: fields{
-				undef:      false,
-				minimumLen: 5,
-				items: stringSet{
-					"hello": {},
-				},
-			},
-			want: Set{
-				infinite:   false,
-				minimumLen: 5,
-				items: stringSet{
-					"hello": {},
-				},
-			},
-		},
-		{
-			name: "clone an infinite set",
-			fields: fields{
-				undef:      true,
-				minimumLen: 5,
-				items: stringSet{
-					"hello": {},
-				},
-			},
-			want: Set{
-				infinite:   true,
-				minimumLen: 5,
-				items: stringSet{
-					"hello": {},
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			s := Set{
-				infinite:   tt.fields.undef,
-				minimumLen: tt.fields.minimumLen,
-				items:      tt.fields.items,
-			}
-			if got := s.Clone(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Clone() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestSet_Items(t *testing.T) {
 	type fields struct {
 		undef      bool

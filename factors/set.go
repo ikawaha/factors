@@ -17,12 +17,14 @@ func newStringSet(items ...string) stringSet {
 	return ret
 }
 
+// Set represents a set of necessary factors.
 type Set struct {
 	items      stringSet
 	minimumLen int
 	infinite   bool
 }
 
+// NewSet creates a set initialized given items.
 func NewSet(items ...string) Set {
 	var ret Set
 	for _, v := range items {
@@ -31,6 +33,7 @@ func NewSet(items ...string) Set {
 	return ret
 }
 
+// Items returns (sorted) items of the set.
 func (s Set) Items() []string {
 	if s.infinite || len(s.items) == 0 {
 		return nil
@@ -43,6 +46,7 @@ func (s Set) Items() []string {
 	return ret
 }
 
+// Add adds a item to the set.
 func (s *Set) Add(item string) {
 	if s.infinite {
 		return
@@ -89,6 +93,7 @@ func longestCommonSubstring(x, y string) string {
 	return x[(p+1)-max : p+1]
 }
 
+// LongestCommon returns the longest common substring of items in the set.
 func (s Set) LongestCommon() string {
 	if len(s.items) == 0 || s.infinite {
 		return ""
@@ -104,22 +109,26 @@ func (s Set) LongestCommon() string {
 	return ret
 }
 
+// Clear clears the set.
 func (s *Set) Clear() {
 	s.infinite = false
 	s.minimumLen = 0
 	s.items = nil
 }
 
-func (s *Set) Diverge() {
+// SetInfinite sets this set infinite.
+func (s *Set) SetInfinite() {
 	s.infinite = true
 	s.minimumLen = 0
 	s.items = nil
 }
 
+// Infinite returns true if this set is infinite.
 func (s Set) Infinite() bool {
 	return s.infinite
 }
 
+// DropRedundantPrefix drops items which has prefix of other item in this set.
 func (s *Set) DropRedundantPrefix() {
 	if s.infinite || len(s.items) == 0 {
 		return
@@ -157,6 +166,7 @@ func sortByRevertedString(s []string) {
 	})
 }
 
+// DropRedundantSuffix drops items which has suffix of other item in this set.
 func (s *Set) DropRedundantSuffix() {
 	if s.infinite || len(s.items) == 0 {
 		return
@@ -177,6 +187,7 @@ func (s *Set) DropRedundantSuffix() {
 	s.items = newStringSet(items...)
 }
 
+// DropRedundantFragment drops items which contains of other item in this set.
 func (s *Set) DropRedundantFragment() {
 	fs := s.Items()
 loop:
@@ -200,18 +211,7 @@ loop:
 	s.items = newStringSet(items...)
 }
 
-func (s Set) Clone() Set {
-	ret := Set{
-		infinite:   s.infinite,
-		minimumLen: s.minimumLen,
-		items:      make(stringSet, len(s.items)),
-	}
-	for k, v := range s.items {
-		ret.items[k] = v
-	}
-	return ret
-}
-
+// Len returns a size of this set.
 func (s Set) Len() int {
 	if s.infinite {
 		return -1
@@ -219,6 +219,7 @@ func (s Set) Len() int {
 	return len(s.items)
 }
 
+// String returns string represents of this set.
 func (s Set) String() string {
 	if s.infinite {
 		return theta
@@ -226,6 +227,7 @@ func (s Set) String() string {
 	return "{" + strings.Join(s.Items(), ", ") + "}"
 }
 
+// UnionSet returns a union set of x and y.
 func UnionSet(x, y Set) Set {
 	var ret Set
 	ret.infinite = x.infinite || y.infinite
@@ -246,6 +248,8 @@ func UnionSet(x, y Set) Set {
 	return ret
 }
 
+// CrossSet returns a cross set of x and y.
+// e.g. CrossSet {a, bc} and {xy, z} -> {axy, az, bcxy, bcz}
 func CrossSet(x, y Set) Set {
 	var ret Set
 	ret.infinite = x.infinite || y.infinite
@@ -262,6 +266,7 @@ func CrossSet(x, y Set) Set {
 	return ret
 }
 
+// BestSet chooses the best set from the given sets.
 func BestSet(arg Set, args ...Set) Set {
 	best := arg
 	for _, v := range args {
@@ -276,15 +281,4 @@ func BestSet(arg Set, args ...Set) Set {
 		best = v
 	}
 	return best
-}
-
-type ByBest []Set
-
-func (s ByBest) Len() int      { return len(s) }
-func (s ByBest) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
-func (s ByBest) Less(i, j int) bool {
-	if s[i].minimumLen == s[j].minimumLen {
-		return len(s[i].items) < len(s[j].items)
-	}
-	return s[i].minimumLen > s[j].minimumLen
 }

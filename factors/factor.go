@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// Factor represents a tuple of necessary factors for a regexp.
 type Factor struct {
 	Exact    Set
 	Prefix   Set
@@ -11,6 +12,7 @@ type Factor struct {
 	Fragment Set
 }
 
+// NewFactor creates a factor tuple.
 func NewFactor() Factor {
 	return Factor{
 		Exact:    Set{},
@@ -20,6 +22,7 @@ func NewFactor() Factor {
 	}
 }
 
+// NewFactorLiteral creates a factor tuple initialized with a given literal.
 func NewFactorLiteral(literal string) Factor {
 	return Factor{
 		Exact:    NewSet(literal),
@@ -29,6 +32,7 @@ func NewFactorLiteral(literal string) Factor {
 	}
 }
 
+// NewFactorInfinite creates a factor tuple each factor set is infinite.
 func NewFactorInfinite() Factor {
 	return Factor{
 		Exact:    Set{infinite: true},
@@ -38,12 +42,14 @@ func NewFactorInfinite() Factor {
 	}
 }
 
+// NewFactorAnyChar creates a factor tuple initialized with regexp "any char".
 func NewFactorAnyChar() Factor {
 	ret := NewFactorLiteral("")
-	ret.Exact.Diverge() // →∞
+	ret.Exact.SetInfinite() // →∞
 	return ret
 }
 
+// Add adds a literal to each factor set.
 func (f *Factor) Add(literal string) {
 	f.Exact.Add(literal)
 	f.Prefix.Add(literal)
@@ -51,18 +57,18 @@ func (f *Factor) Add(literal string) {
 	f.Fragment.Add(literal)
 }
 
+// Infinite returns true if there is a infinite set in the tuple.
 func (f Factor) Infinite() bool {
 	return f.Exact.infinite && f.Prefix.infinite && f.Suffix.infinite && f.Fragment.infinite
 }
 
+// String returns string representation of a tuple.
 func (f Factor) String() string {
 	return fmt.Sprintf("<exact:%s, prefix:%s, suffix:%s, fragment:%s>", f.Exact, f.Prefix, f.Suffix, f.Fragment)
 }
 
 // Alternate represents `a|b`
 func Alternate(a, b Factor) Factor {
-	//fmt.Printf("alt: %+v, %+v\n", a, b)
-	//defer func() { fmt.Printf("  ->%+v\n", a) }()
 	var ret Factor
 	ret.Exact = UnionSet(a.Exact, b.Exact)
 	ret.Prefix = UnionSet(a.Prefix, b.Prefix)
@@ -73,8 +79,6 @@ func Alternate(a, b Factor) Factor {
 
 // Concatenate represents `a・b`
 func Concatenate(a, b Factor) Factor {
-	//fmt.Printf("cat: %+v, %+v\n", a, b)
-	//defer func() { fmt.Printf("  ->%+v\n", ret) }()
 	var ret Factor
 	ret.Exact = CrossSet(a.Exact, b.Exact)
 

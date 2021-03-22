@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"bytes"
-	_ "embed"
+	_ "embed" //nolint:golint
 	"html/template"
 	"io"
 	"log"

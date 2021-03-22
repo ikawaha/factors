@@ -8,21 +8,26 @@ import (
 
 const charClassLimit = 100
 
+// Analyzer is a regexp necessary factor analyzer.
 type Analyzer struct{}
 
+// NewAnalyzer creates new analyzer.
 func NewAnalyzer() *Analyzer {
 	return &Analyzer{}
 }
 
+// Factor returns necessary factors for a given regexp.
 func (a Analyzer) Factor(re *syntax.Regexp) Factor {
 	root := analyze(re, false)
 	return root.Factor
 }
 
+// Parse parses necessary factors for a given regexp, and returns a it's parse tree.
 func (a Analyzer) Parse(re *syntax.Regexp) *Node {
 	return analyze(re, true)
 }
 
+// DebugParse parses necessary factors for a given regexp, and writes a it's parse tree in dot format.
 func (a Analyzer) DebugParse(w io.Writer, re *syntax.Regexp) Factor {
 	root := a.Parse(re)
 	root.Dot(w)
@@ -42,9 +47,8 @@ func (a Analyzer) DebugParse(w io.Writer, re *syntax.Regexp) Factor {
 //  	Cap      int        // capturing index, for OpCapture
 //  	Name     string     // capturing name, for OpCapture
 // }
+//nolint:gocyclo
 func analyze(re *syntax.Regexp, tree bool) *Node {
-	//println("analyze", re.String())
-	//defer func() { fmt.Printf("  ->%+v\n", n) }()
 	if re == nil {
 		return nil
 	}
@@ -118,7 +122,7 @@ func analyze(re *syntax.Regexp, tree bool) *Node {
 		}
 		return n
 	case syntax.OpConcat:
-		if len(re.Sub) == 0 { //XXX
+		if len(re.Sub) == 0 {
 			return &Node{
 				Factor: NewFactorInfinite(),
 				Regexp: re,
@@ -130,7 +134,7 @@ func analyze(re *syntax.Regexp, tree bool) *Node {
 				Factor: n0.Factor,
 				Regexp: re,
 			}
-			if tree == tree {
+			if tree {
 				n.Child = append(n.Child, n0)
 			}
 			return n
@@ -176,7 +180,7 @@ func analyze(re *syntax.Regexp, tree bool) *Node {
 			}
 		}
 		n0 := analyze(re.Sub[0], tree)
-		if tree != tree && n0.Factor.Infinite() {
+		if !tree && n0.Factor.Infinite() {
 			return &Node{
 				Factor: NewFactorInfinite(),
 				Regexp: re,
@@ -198,14 +202,14 @@ func analyze(re *syntax.Regexp, tree bool) *Node {
 		}
 		for i := 2; i < len(re.Sub); i++ {
 			ni := analyze(re.Sub[i], tree)
-			if tree != tree && ni.Factor.Infinite() {
+			if !tree && ni.Factor.Infinite() {
 				return &Node{
 					Factor: NewFactorInfinite(),
 					Regexp: re,
 				}
 			}
 			n.Factor = Alternate(n.Factor, ni.Factor)
-			if tree == tree {
+			if tree {
 				n.Child = append(n.Child, ni)
 			}
 		}
@@ -215,14 +219,14 @@ func analyze(re *syntax.Regexp, tree bool) *Node {
 			Factor: NewFactorInfinite(),
 			Regexp: re,
 		}
-		if tree == tree {
+		if tree {
 			n0 := analyze(re.Sub[0], true)
 			n.Child = append(n.Child, n0)
 		}
 		return n
 	case syntax.OpStar:
 		n := &Node{Factor: NewFactorInfinite(), Regexp: re}
-		if tree == tree {
+		if tree {
 			n.Child = append(n.Child, analyze(re.Sub[0], true))
 		}
 		return n
@@ -230,7 +234,7 @@ func analyze(re *syntax.Regexp, tree bool) *Node {
 		if re.Min == 0 {
 			n0 := analyze(re.Sub[0], tree)
 			n := &Node{Factor: NewFactorInfinite(), Regexp: re}
-			if tree == tree {
+			if tree {
 				n.Child = append(n.Child, n0)
 			}
 			return n
@@ -246,7 +250,7 @@ func analyze(re *syntax.Regexp, tree bool) *Node {
 			Factor: n0.Factor,
 			Regexp: re,
 		}
-		if tree == tree {
+		if tree {
 			n.Child = append(n.Child, n0)
 		}
 		return n
@@ -277,7 +281,7 @@ func analyze(re *syntax.Regexp, tree bool) *Node {
 		for i := 0; i < len(re.Rune); i += 2 {
 			lo, hi := re.Rune[i], re.Rune[i+1]
 			for rr := lo; rr <= hi; rr++ {
-				f.Add(string(rr)) //f = Alternate(fact, NewFactorLiteral(string(rr)))
+				f.Add(string(rr))
 			}
 		}
 		return &Node{

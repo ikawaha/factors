@@ -5,6 +5,7 @@ import (
 	"regexp/syntax"
 )
 
+// RegexpOpCodeTable is a set of regexp operations.
 var RegexpOpCodeTable = []string{
 	"",
 	"NoMatch",
@@ -28,8 +29,10 @@ var RegexpOpCodeTable = []string{
 	"|",
 }
 
+// Op is systax.Op.
 type Op syntax.Op
 
+// String is a string representation of the regexp operation.
 func (o Op) String() string {
 	op := int(o)
 	if op >= 0 && op < len(RegexpOpCodeTable) {
