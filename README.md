@@ -1,6 +1,6 @@
 # Regexp Necessary Factors
 
-## Installation
+## Install
 
 ```
 $ go install github.com/ikawaha/factors@latest
